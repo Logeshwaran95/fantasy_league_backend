@@ -1,16 +1,40 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
-const selectionsSchema = new Schema({
-    selection: {
-        type: Array,
+const playerSchema = new Schema({
+    id: {
+        type: String,
         required: true
     },
-
-    id: {
+    name: {
+        type: String,
+        required: true
+    },
+    points: {
         type: Number,
         required: true
     },
+    team:{
+        type: String,
+        required: true
+    },
+    playerRole: {
+        type: String,
+        required: true
+    }
+})
+const selectionsSchema = new Schema({
+    id: {
+        type: String,
+        required: true
+    },
+    mid: {
+        type: String,
+        required: true
+    },
+    selection: {
+        type: [playerSchema],
+        required: true
+    }
 }, {timestamps:true});
 
 const Selections = mongoose.model('Selections', selectionsSchema);

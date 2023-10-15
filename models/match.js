@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const BattingStatsSchema = new Schema({
-  id: { type: Number, required: true },
+  id: { type: String, required: true },
   player: { type: String, required: true },
   runs: { type: Number, required: true },
   balls: { type: Number, required: true },
@@ -12,8 +12,8 @@ const BattingStatsSchema = new Schema({
 });
 
 const BowlingStatsSchema = new Schema({
-  id: { type: Number, required: true },
-  bowler: { type: String, required: true },
+  id: { type: String, required: true },
+  player: { type: String, required: true },
   overs: { type: Number, required: true },
   maidens: { type: Number, required: true },
   runs: { type: Number, required: true },
@@ -22,33 +22,36 @@ const BowlingStatsSchema = new Schema({
 });
 
 const FallOfWicketsSchema = new Schema({
-  name: { type: String, required: true },
+  playerName: { type: String, required: true },
   wicket: { type: Number, required: true },
   runs: { type: Number, required: true },
 });
 
 const MatchSchema = new Schema({
-  teams: {
-    team1: { type: String, required: true },
-    team2: { type: String, required: true },
-  },
-  score: { type: String, required: true },
+  id: {type: String, required: true},
+  team1: { type: String, required: true },
+  team2: { type: String, required: true },
   toss: { type: String, required: true },
-  electedTo: { type: String, required: true },
   stadium: { type: String, required: true },
-  batting: { type: String, required: true },
-  bowling: { type: String, required: true },
-  onStrike: { type: String, required: true },
-  nonStrike: { type: String, required: true },
-  bowler: { type: String, required: true },
-  battingStats: { type: [BattingStatsSchema], required: true },
-  bowlingStats: { type: [BowlingStatsSchema], required: true },
-  extras: {
+  totalRunsTeam1: { type: String, required: true },
+  totalRunsTeam2: { type: String, required: true },
+  result: {type: String, required: true},
+  battingTeam1: { type: [BattingStatsSchema], required: true },
+  bowlingTeam1: { type: [BowlingStatsSchema], required: true },
+  extrasTeam1: {
     byes: { type: Number, required: true },
     wides: { type: Number, required: true },
     noBalls: { type: Number, required: true },
   },
-  fallOfWickets: { type: [FallOfWicketsSchema], required: true },
+  fallOfWicketsTeam1: { type: [FallOfWicketsSchema], required: true },
+  battingTeam2: { type: [BattingStatsSchema], required: true },
+  bowlingTeam2: { type: [BowlingStatsSchema], required: true },
+  extrasTeam2: {
+    byes: { type: Number, required: true },
+    wides: { type: Number, required: true },
+    noBalls: { type: Number, required: true },
+  },
+  fallOfWicketsTeam2: { type: [FallOfWicketsSchema], required: true },
 }, { timestamps: true });
 
 const Match = mongoose.model('Matchs', MatchSchema);
