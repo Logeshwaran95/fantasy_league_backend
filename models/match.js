@@ -16,7 +16,7 @@ const BowlingStatsSchema = new Schema({
   player: { type: String, required: true },
   overs: { type: Number, required: true },
   maidens: { type: Number, required: true },
-  runs: { type: Number, required: true },
+  runs_: { type: Number, required: true },
   wickets: { type: Number, required: true },
   economy: { type: Number, required: true },
 });

@@ -117,13 +117,19 @@ const calculateScore = async (req, res) => {
             if (!playerScores[id]) {
                 playerScores[id] = 0;
             }
-            if (player.runs !== undefined) {
+            if ("runs" in player) {
                 playerScores[id] += player.runs;
                 playerScores[id] += Math.floor(player.runs / 50) * 4;
                 playerScores[id] += Math.floor(player.runs / 100) * 8;
                 if (player.runs === 0) {
                     playerScores[id] -= 3;
                 }
+            }
+            if("fours" in player){
+                playerScores[id] += player.fours
+            }
+            if("sixes" in player){
+                playerScores[id] += 3*player.sixes
             }
             if ("wickets" in player) {
                 playerScores[id] += player.wickets * 25;
@@ -137,7 +143,7 @@ const calculateScore = async (req, res) => {
             if ("maidens" in player) {
                 playerScores[id] += player.maidens * 4;
             }
-            if (player.strikeRate !== undefined) {
+            if ("strikeRate" in player) {
                 const sr = player.strikeRate;
                 if (sr > 140) playerScores[id] += 6;
                 else if (sr > 120) playerScores[id] += 4;
@@ -177,7 +183,7 @@ const calculateScore = async (req, res) => {
                 }
             })
         })
-        res.status(201).json({message: "Successfully Updated Score" })
+        res.status(201).json({data: playerScores,message: "Successfully Updated Score" })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
