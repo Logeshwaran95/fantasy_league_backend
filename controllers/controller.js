@@ -42,7 +42,7 @@ const leaderboard = async (req, res) => {
 
 const addSelection = async (req, res) => {
     let selection = new Selections(req.body);
-    const user = await this.findOneAndUpdate({ id: req.body.id }, { selected: true });
+    const user = await Users.findOneAndUpdate({ id: req.body.id }, { selected: true });
     try {
         await selection.save();
         res.status(201).json({ message: "Success, Selections Updated" });
@@ -251,13 +251,20 @@ const addPlayer  = async (req, res) => {
 const getSelected = async (req,res) => {
     try {
         const user = await Users.find({ id: req.params.id });
-        if (post.length === 0) {
-            await user.save();
-            res.status(201).json({ isSelected:user.selected, message: "Success" });
-        }
-        else {
-            res.status(409).json({ message: "User Exist already" });
-        }
+        res.status(201).json({ isSelected:user[0].selected, message: "Success" });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+const zeroMatchId  = async (req, res) => {
+    try {
+        const result = await MatchId.deleteMany({});
+        let matchId = new MatchId({
+            id:0
+        });
+        await matchId.save();
+        res.status(201).json({ data:matchId,message: "Success, Match Updated" });
     }
     catch (err) {
         res.status(500).json({ message: err.message })
@@ -276,5 +283,6 @@ module.exports = {
     patchMatchId,
     addPlayer,
     getPlayerList,
-    getSelected
+    getSelected,
+    zeroMatchId
 } 

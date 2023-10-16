@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { signup,leaderboard,addSelection,getSelection, matchAdd, getRecentMatch, calculateScore, getMatchId, putMatchId, patchMatchId, addPlayer, getPlayerList, getSelected } = require("../controllers/controller");
+const { signup,leaderboard,addSelection,getSelection, matchAdd, getRecentMatch, calculateScore, getMatchId, putMatchId, patchMatchId, addPlayer, getPlayerList, getSelected, zeroMatchId } = require("../controllers/controller");
 
 
 
@@ -19,6 +19,7 @@ router.patch("/patchMatchId", patchMatchId);
 router.post("/addPlayerList",addPlayer);
 router.get("/getPlayerList/:id",getPlayerList);
 router.get("/getSelected/:id",getSelected);
+router.put("/zeroMatchId",zeroMatchId);
 module.exports = router;
 
 
