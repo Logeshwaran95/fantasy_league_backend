@@ -1,11 +1,13 @@
 const Match = require("../models/match");
-const Selections = require("../models/selections");
+const MatchId = require("../models/matchId");
+const {Selections,PlayerList} = require("../models/selections");
 const Users = require("../models/users");
 
 
 const signup = async (req, res) => {
     let user = new Users(req.body);
     user.score = 0;
+    user.selected=false;
     try {
         const post = await Users.find({ id: req.body.id });
         if (post.length === 0) {
@@ -23,7 +25,9 @@ const signup = async (req, res) => {
 
 const leaderboard = async (req, res) => {
     try {
-        const scores = await Scores.find({});
+        const scores = await Users.find({}, 'id name score')
+            .sort({ score: -1 })
+            .exec();
         if (scores.length === 0) {
             res.status(409).json({ message: "No Users,No leaderboard" });
         }
@@ -38,6 +42,7 @@ const leaderboard = async (req, res) => {
 
 const addSelection = async (req, res) => {
     let selection = new Selections(req.body);
+    const user = await this.findOneAndUpdate({ id: req.body.id }, { selected: true });
     try {
         await selection.save();
         res.status(201).json({ message: "Success, Selections Updated" });
@@ -78,7 +83,12 @@ const matchAdd = async (req, res) => {
 
 const getRecentMatch = async (req, res) => {
     try {
-        const match = await Match.find()
+        if(req.params.id==0)
+        {
+            res.status(201).json({message: "First Match is going" });
+            return;
+        }
+        const match = await Match.find({id:req.params.id})
             .sort({ createdAt: -1 })
             .limit(1)
         if (match.length === 0) {
@@ -94,6 +104,11 @@ const getRecentMatch = async (req, res) => {
 }
 const calculateScore = async (req, res) => {
     try {
+        if(req.params.id==0)
+        {
+            res.status(201).json({message: "First Match is going" });
+            return;
+        }
         const match = await Match.findOne({ id: req.params.id })
         let players = [];
         players.push(...match.battingTeam1);
@@ -153,7 +168,7 @@ const calculateScore = async (req, res) => {
         });
 
         const users = await Selections.find({ mid: req.params.id });
-        users.map((user) => {
+        users.map((user,key) => {
             let userScore = 0;
             user.selection.map((player) => {
                 if(playerScores[player.id] !== undefined){
@@ -166,14 +181,85 @@ const calculateScore = async (req, res) => {
                     }
                 }
             })
-            Users.updateOne({ id: user.id }, { $inc: { score: userScore } }, (err, result) => {
+            Users.updateOne({ id: user.id }, { $inc: { score: userScore }, $set: { selected: false } }, (err, result) => {
                 if (err) {
                     console.log(err);
                 }
             })
         })
-        res.status(201).json({data: playerScores,message: "Successfully Updated Score" })
+        res.status(201).json({message: "Successfully Updated Score" })
     } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+const getMatchId = async (req,res) => {
+    try {
+        const match = await MatchId.find({});
+        res.status(201).json({ data: match });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+const putMatchId  = async (req, res) => {
+    let matchId = new MatchId({
+        id:0
+    });
+    try {
+        await matchId.save();
+        res.status(201).json({ message: "Success, Selections Updated" });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+const patchMatchId  = async (req, res) => {
+    try {
+        const result = await MatchId.deleteMany({});
+        let matchId = new MatchId({
+            id:req.body.matchid
+        });
+        await matchId.save();
+        res.status(201).json({ data:matchId,message: "Success, Match Updated" });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+const getPlayerList = async (req,res) => {
+    try {
+        const match = await Match.findOne({id:req.params.id});
+        const players = await PlayerList.find({
+            $or: [{ team: match.team1 }, { team: match.team2 }]
+        });
+        res.status(201).json({ data: players });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+const addPlayer  = async (req, res) => {
+    let player = new PlayerList(req.body);
+    try {
+        await player.save();
+        res.status(201).json({ message: "Player Saved" });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+const getSelected = async (req,res) => {
+    try {
+        const user = await Users.find({ id: req.params.id });
+        if (post.length === 0) {
+            await user.save();
+            res.status(201).json({ isSelected:user.selected, message: "Success" });
+        }
+        else {
+            res.status(409).json({ message: "User Exist already" });
+        }
+    }
+    catch (err) {
         res.status(500).json({ message: err.message })
     }
 }
@@ -184,5 +270,11 @@ module.exports = {
     getSelection,
     matchAdd,
     getRecentMatch,
-    calculateScore
+    calculateScore,
+    getMatchId,
+    putMatchId,
+    patchMatchId,
+    addPlayer,
+    getPlayerList,
+    getSelected
 } 

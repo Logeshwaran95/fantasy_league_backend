@@ -1,3 +1,4 @@
+const { bool } = require("joi");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -20,6 +21,10 @@ const usersSchema = new Schema({
     },
     score: {
         type: Number,
+        required: true
+    },
+    selected:{
+        type: Boolean,
         required: true
     }
 }, {timestamps:true});

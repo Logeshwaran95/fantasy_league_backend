@@ -36,6 +36,24 @@ const selectionsSchema = new Schema({
         required: true
     }
 }, {timestamps:true});
-
+const allPlayerSchema = new Schema({
+    id: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    points: {
+        type: Number,
+        required: true
+    },
+    team:{
+        type: String,
+        required: true
+    },
+},{timestamps:true})
 const Selections = mongoose.model('Selections', selectionsSchema);
-module.exports = Selections;
+const PlayerList = mongoose.model('Players', allPlayerSchema);
+module.exports = {Selections,PlayerList};
