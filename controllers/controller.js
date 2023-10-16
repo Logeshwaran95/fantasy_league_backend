@@ -92,17 +92,6 @@ const getRecentMatch = async (req, res) => {
         res.status(500).json({ message: err.message })
     }
 }
-const updateArray = (array, id, score) => {
-    array = array.map((item) => {
-        if (item.id === id) {
-            let oldScore = item.score;
-            let newScore = oldScore + score;
-            return { ...item, score: newScore };
-        }
-        return item;
-    });
-    return array;
-}
 const calculateScore = async (req, res) => {
     try {
         const match = await Match.findOne({ id: req.params.id })
