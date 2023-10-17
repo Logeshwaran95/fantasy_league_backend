@@ -20,6 +20,10 @@ const playerSchema = new Schema({
     playerRole: {
         type: String,
         required: true
+    },
+    image_url:{
+        type: String,
+        required: true
     }
 })
 const selectionsSchema = new Schema({
