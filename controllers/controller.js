@@ -130,7 +130,7 @@ const calculateScore = async (req, res) => {
                 }
             }
             if("fours" in player){
-                playerScores[id] += player.fours
+                playerScores[id] += 2*player.fours
             }
             if("sixes" in player){
                 playerScores[id] += 3*player.sixes
@@ -142,6 +142,9 @@ const calculateScore = async (req, res) => {
                 }
                 if (player.wickets >= 4) {
                     playerScores[id] += Math.floor(player.wickets / 4) * 8;
+                }
+                if(player.wickets >= 6){
+                    playerScores[id] += Math.floor(player.wickets / 6) * 8;
                 }
             }
             if ("maidens" in player) {
@@ -161,6 +164,7 @@ const calculateScore = async (req, res) => {
                 if (eco < 2.5) playerScores[id] += 6;
                 else if (eco < 3.5) playerScores[id] += 4;
                 else if (eco < 4.5) playerScores[id] += 2;
+                else if (eco <= 6) playerScores[id] += 1;
                 else if (eco < 8) playerScores[id] -= 2;
                 else if (eco < 9) playerScores[id] -= 4;
                 else playerScores[id] -= 6;
