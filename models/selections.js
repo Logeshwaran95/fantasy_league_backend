@@ -56,6 +56,10 @@ const allPlayerSchema = new Schema({
     cricbuzzId:{
         type: String,
         required: true
+    },
+    image_url: {
+        type: String,
+        required: true
     }
 },{timestamps:true})
 const Selections = mongoose.model('Selections', selectionsSchema);
