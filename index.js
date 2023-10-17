@@ -6,7 +6,7 @@ const morgan = require('morgan');
 
 require('dotenv').config()
 let router;
-mongoose.connect(process.env.localConnection, {
+mongoose.connect(process.env.globalConnection, {
     useNewUrlParser:true,
     useUnifiedTopology: true
 })

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { signup,leaderboard,addSelection,getSelection, matchAdd, getRecentMatch, calculateScore, getMatchId, putMatchId, patchMatchId, addPlayer, getPlayerList, getSelected, zeroMatchId } = require("../controllers/controller");
+const { signup,leaderboard,addSelection,getSelection, matchAdd, getRecentMatch, calculateScore, getMatchId, putMatchId, patchMatchId, addPlayer, getPlayerList, getSelected, zeroMatchId, addPlayers } = require("../controllers/controller");
 
 
 
@@ -17,6 +17,7 @@ router.get("/getMatchId",getMatchId);
 router.post("/putMatchId", putMatchId);//backend purpose 
 router.patch("/patchMatchId", patchMatchId);
 router.post("/addPlayerList",addPlayer);
+router.post("/addPlayersList",addPlayers);
 router.get("/getPlayerList/:id",getPlayerList);
 router.get("/getSelected/:id",getSelected);
 router.put("/zeroMatchId",zeroMatchId);
