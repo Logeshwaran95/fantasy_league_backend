@@ -38,19 +38,11 @@ const MatchSchema = new Schema({
   result: {type: String, required: true},
   battingTeam1: { type: [BattingStatsSchema], required: true },
   bowlingTeam1: { type: [BowlingStatsSchema], required: true },
-  extrasTeam1: {
-    byes: { type: Number, required: true },
-    wides: { type: Number, required: true },
-    noBalls: { type: Number, required: true },
-  },
+  extrasTeam1: { type:  Number, required: true },
   fallOfWicketsTeam1: { type: [FallOfWicketsSchema], required: true },
   battingTeam2: { type: [BattingStatsSchema], required: true },
   bowlingTeam2: { type: [BowlingStatsSchema], required: true },
-  extrasTeam2: {
-    byes: { type: Number, required: true },
-    wides: { type: Number, required: true },
-    noBalls: { type: Number, required: true },
-  },
+  extrasTeam2: { type:  Number, required: true },
   fallOfWicketsTeam2: { type: [FallOfWicketsSchema], required: true },
 }, { timestamps: true });
 

@@ -3,6 +3,16 @@ const MatchId = require("../models/matchId");
 const {Selections,PlayerList} = require("../models/selections");
 const Users = require("../models/users");
 
+//Function to calculate strikerate
+const calculateStrikeRate = (runs, balls) => {
+    return ((runs / balls) * 100).toFixed(2);
+  };
+  
+  // Function to calculate economy
+  const calculateEconomy = (runs, overs) => {
+    if (overs==0) return 37;
+    return (runs / overs).toFixed(2);
+  };
 
 const signup = async (req, res) => {
     let user = new Users(req.body);
@@ -71,7 +81,27 @@ const getSelection = async (req, res) => {
 }
 
 const matchAdd = async (req, res) => {
-    let match = new Match(req.body);
+    let matchData = req.body;
+    // Add strike rate for each player in battingTeam1
+    matchData.battingTeam1.forEach(player => {
+    player.strikeRate = calculateStrikeRate(player.runs, player.balls);
+  });
+  
+  // Add economy for each player in bowlingTeam1
+  matchData.bowlingTeam1.forEach(player => {
+    player.economy = calculateEconomy(player.runs_, player.overs);
+  });
+  
+  // Add strike rate for each player in battingTeam2
+  matchData.battingTeam2.forEach(player => {
+    player.strikeRate = calculateStrikeRate(player.runs, player.balls);
+  });
+  
+  // Add economy for each player in bowlingTeam2
+  matchData.bowlingTeam2.forEach(player => {
+    player.economy = calculateEconomy(player.runs_, player.overs);
+  });
+    let match = new Match(matchData);
     try {
         await match.save();
         res.status(201).json({ message: "Success, Match Updated" });
@@ -274,6 +304,20 @@ const zeroMatchId  = async (req, res) => {
         res.status(500).json({ message: err.message })
     }
 }
+const addPlayers  = async (req, res) => {
+    try {
+        let i;
+        for(i=0;i<req.body.length;i++)
+        {
+            let player = new PlayerList(req.body[i]);
+            await player.save();   
+        }
+        res.status(201).json({ message: "Players Saved" });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
 module.exports = {
     signup,
     leaderboard,
@@ -288,5 +332,6 @@ module.exports = {
     addPlayer,
     getPlayerList,
     getSelected,
-    zeroMatchId
+    zeroMatchId,
+    addPlayers
 } 
