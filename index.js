@@ -19,8 +19,10 @@ mongoose.connect(process.env.globalConnection, {
     console.log(err.message);
     process.exit(1);
 });
-app.use(express.urlencoded({extended:true}));
-app.use(express.json());
+// app.use(express.urlencoded({extended:true}));
+// app.use(express.json());
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({extended:true, limit: '50mb'}));
 app.use(morgan('dev'));
 app.use(cors());
 
