@@ -3,9 +3,6 @@ const router = express.Router();
 
 const { signup,leaderboard,addSelection,getSelection, matchAdd, getRecentMatch, calculateScore, getMatchId, putMatchId, patchMatchId, addPlayer, getPlayerList, getSelected, zeroMatchId, addPlayers } = require("../controllers/controller");
 
-
-
-
 router.post("/signup", signup);
 router.get("/leaderboard", leaderboard);
 router.post("/addSelection", addSelection);
@@ -21,7 +18,5 @@ router.post("/addPlayersList",addPlayers);
 router.get("/getPlayerList/:id",getPlayerList);
 router.get("/getSelected/:id",getSelected);
 router.put("/zeroMatchId",zeroMatchId);
+
 module.exports = router;
-
-
-
