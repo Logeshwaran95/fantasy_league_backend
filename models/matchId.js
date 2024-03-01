@@ -6,6 +6,12 @@ const matchSchema = new Schema({
         type: Number,
         required: true
     },
+    inningsid: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 2
+    }
 });
 
 const MatchId = mongoose.model('Matchid', matchSchema);

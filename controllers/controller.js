@@ -1,23 +1,23 @@
 const Match = require("../models/match");
 const MatchId = require("../models/matchId");
-const {Selections,PlayerList} = require("../models/selections");
+const { Selections, PlayerList } = require("../models/selections");
 const Users = require("../models/users");
 
 //Function to calculate strikerate
 const calculateStrikeRate = (runs, balls) => {
     return ((runs / balls) * 100).toFixed(2);
-  };
-  
-  // Function to calculate economy
-  const calculateEconomy = (runs, overs) => {
-    if (overs==0) return 37;
+};
+
+// Function to calculate economy
+const calculateEconomy = (runs, overs) => {
+    if (overs == 0) return 37;
     return (runs / overs).toFixed(2);
-  };
+};
 
 const signup = async (req, res) => {
     let user = new Users(req.body);
     user.score = 0;
-    user.selected=false;
+    user.selected = false;
     try {
         const post = await Users.find({ id: req.body.id });
         if (post.length === 0) {
@@ -84,23 +84,23 @@ const matchAdd = async (req, res) => {
     let matchData = req.body;
     // Add strike rate for each player in battingTeam1
     matchData.battingTeam1.forEach(player => {
-    player.strikeRate = calculateStrikeRate(player.runs, player.balls);
-  });
-  
-  // Add economy for each player in bowlingTeam1
-  matchData.bowlingTeam1.forEach(player => {
-    player.economy = calculateEconomy(player.runs_, player.overs);
-  });
-  
-  // Add strike rate for each player in battingTeam2
-  matchData.battingTeam2.forEach(player => {
-    player.strikeRate = calculateStrikeRate(player.runs, player.balls);
-  });
-  
-  // Add economy for each player in bowlingTeam2
-  matchData.bowlingTeam2.forEach(player => {
-    player.economy = calculateEconomy(player.runs_, player.overs);
-  });
+        player.strikeRate = calculateStrikeRate(player.runs, player.balls);
+    });
+
+    // Add economy for each player in bowlingTeam1
+    matchData.bowlingTeam1.forEach(player => {
+        player.economy = calculateEconomy(player.runs_, player.overs);
+    });
+
+    // Add strike rate for each player in battingTeam2
+    matchData.battingTeam2.forEach(player => {
+        player.strikeRate = calculateStrikeRate(player.runs, player.balls);
+    });
+
+    // Add economy for each player in bowlingTeam2
+    matchData.bowlingTeam2.forEach(player => {
+        player.economy = calculateEconomy(player.runs_, player.overs);
+    });
     let match = new Match(matchData);
     try {
         await match.save();
@@ -113,12 +113,11 @@ const matchAdd = async (req, res) => {
 
 const getRecentMatch = async (req, res) => {
     try {
-        if(req.params.id==0)
-        {
-            res.status(201).json({message: "First Match is going" });
+        if (req.params.id == 0) {
+            res.status(201).json({ message: "First Match is going" });
             return;
         }
-        const match = await Match.find({id:req.params.id})
+        const match = await Match.find({ id: req.params.id })
             .sort({ createdAt: -1 })
             .limit(1)
         if (match.length === 0) {
@@ -134,17 +133,21 @@ const getRecentMatch = async (req, res) => {
 }
 const calculateScore = async (req, res) => {
     try {
-        if(req.params.id==0)
-        {
-            res.status(201).json({message: "First Match is going" });
+        if (req.params.id == 0) {
+            res.status(201).json({ message: "First Match is going" });
             return;
         }
         const match = await Match.findOne({ id: req.params.id })
         let players = [];
-        players.push(...match.battingTeam1);
-        players.push(...match.battingTeam2);
-        players.push(...match.bowlingTeam1);
-        players.push(...match.bowlingTeam2);
+
+        if (req.params.inningsid == 1) {
+            players.push(...match.battingTeam1);
+            players.push(...match.bowlingTeam1);
+        }
+        else if (req.params.inningsid == 2) {
+            players.push(...match.battingTeam2);
+            players.push(...match.bowlingTeam2);
+        }
         let playerScores = {};
         players.forEach((player) => {
             const id = player.id;
@@ -159,11 +162,11 @@ const calculateScore = async (req, res) => {
                     playerScores[id] -= 3;
                 }
             }
-            if("fours" in player){
-                playerScores[id] += 2*player.fours
+            if ("fours" in player) {
+                playerScores[id] += 2 * player.fours
             }
-            if("sixes" in player){
-                playerScores[id] += 3*player.sixes
+            if ("sixes" in player) {
+                playerScores[id] += 3 * player.sixes
             }
             if ("wickets" in player) {
                 playerScores[id] += player.wickets * 25;
@@ -173,7 +176,7 @@ const calculateScore = async (req, res) => {
                 if (player.wickets >= 4) {
                     playerScores[id] += Math.floor(player.wickets / 4) * 8;
                 }
-                if(player.wickets >= 6){
+                if (player.wickets >= 6) {
                     playerScores[id] += Math.floor(player.wickets / 6) * 8;
                 }
             }
@@ -202,15 +205,15 @@ const calculateScore = async (req, res) => {
         });
 
         const users = await Selections.find({ mid: req.params.id });
-        users.map((user,key) => {
+        users.map((user, key) => {
             let userScore = 0;
             user.selection.map((player) => {
-                if(playerScores[player.id] !== undefined){
-                    if(player.playerRole === "captain"){
-                        userScore += 2*playerScores[player.id];
-                    }else if(player.playerRole === "viceCaptain"){
-                        userScore += 1.5*playerScores[player.id];
-                    }else{
+                if (playerScores[player.id] !== undefined) {
+                    if (player.playerRole === "captain") {
+                        userScore += 2 * playerScores[player.id];
+                    } else if (player.playerRole === "viceCaptain") {
+                        userScore += 1.5 * playerScores[player.id];
+                    } else {
                         userScore += playerScores[player.id];
                     }
                 }
@@ -221,12 +224,12 @@ const calculateScore = async (req, res) => {
                 }
             })
         })
-        res.status(201).json({message: "Successfully Updated Score" })
+        res.status(201).json({ message: "Successfully Updated Score" })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
 }
-const getMatchId = async (req,res) => {
+const getMatchId = async (req, res) => {
     try {
         const match = await MatchId.find({});
         res.status(201).json({ data: match });
@@ -235,9 +238,10 @@ const getMatchId = async (req,res) => {
         res.status(500).json({ message: err.message })
     }
 }
-const putMatchId  = async (req, res) => {
+const putMatchId = async (req, res) => {
     let matchId = new MatchId({
-        id:0
+        id: 0,
+        inningsid: 0
     });
     try {
         await matchId.save();
@@ -247,22 +251,23 @@ const putMatchId  = async (req, res) => {
         res.status(500).json({ message: err.message })
     }
 }
-const patchMatchId  = async (req, res) => {
+const patchMatchId = async (req, res) => {
     try {
         const result = await MatchId.deleteMany({});
         let matchId = new MatchId({
-            id:req.body.matchid
+            id: req.body.matchid,
+            inningsid: req.body.inningsid
         });
         await matchId.save();
-        res.status(201).json({ data:matchId,message: "Success, Match Updated" });
+        res.status(201).json({ data: matchId, message: "Success, Match Updated" });
     }
     catch (err) {
         res.status(500).json({ message: err.message })
     }
 }
-const getPlayerList = async (req,res) => {
+const getPlayerList = async (req, res) => {
     try {
-        const match = await Match.findOne({id:req.params.id});
+        const match = await Match.findOne({ id: req.params.id });
         const players = await PlayerList.find({
             $or: [{ team: match.team1 }, { team: match.team2 }]
         });
@@ -272,7 +277,7 @@ const getPlayerList = async (req,res) => {
         res.status(500).json({ message: err.message })
     }
 }
-const addPlayer  = async (req, res) => {
+const addPlayer = async (req, res) => {
     let player = new PlayerList(req.body);
     try {
         await player.save();
@@ -282,35 +287,64 @@ const addPlayer  = async (req, res) => {
         res.status(500).json({ message: err.message })
     }
 }
-const getSelected = async (req,res) => {
+const getSelected = async (req, res) => {
     try {
         const user = await Users.find({ id: req.params.id });
-        res.status(201).json({ isSelected:user[0].selected, message: "Success" });
+        res.status(201).json({ isSelected: user[0].selected, message: "Success" });
     }
     catch (err) {
         res.status(500).json({ message: err.message })
     }
 }
-const zeroMatchId  = async (req, res) => {
+const zeroMatchId = async (req, res) => {
     try {
         const result = await MatchId.deleteMany({});
         let matchId = new MatchId({
-            id:0
+            id: 0,
+            inningsid: 0
         });
         await matchId.save();
-        res.status(201).json({ data:matchId,message: "Success, Match Updated" });
+        res.status(201).json({ data: matchId, message: "Success, Match Updated" });
     }
     catch (err) {
         res.status(500).json({ message: err.message })
     }
 }
-const addPlayers  = async (req, res) => {
+
+const incrementMatchId = async (req, res) => {
+    try {
+        const match = await MatchId.findOne({})
+        if (match.id === 0) {
+            const updatedMatch = await MatchId.findOneAndUpdate({}, { $inc: { id: 1 }, $set: { inningsid: 0 } }, { new: true });
+            const players = await PlayerList.find({})
+            res.status(201).json({ data: players, message: "Success, Match Updated, Players list fetched" });
+            return;
+        }
+        if (match.inningsid === 0) {
+            const updatedMatch = await MatchId.findOneAndUpdate({}, { $inc: { inningsid: 1 } }, { new: true });
+            const players = await PlayerList.find({})
+            res.status(201).json({ data: players, message: "Success, Match Updated, Players list fetched" });
+        }
+        else if (match.inningsid === 1) {
+            const updatedMatch = await MatchId.findOneAndUpdate({}, { $inc: { inningsid: 1 } }, { new: true });
+            const match = await Match.find({})
+            res.status(201).json({ data: match, message: "Success, Match Updated, Match details fetched" });
+        }
+        else if (match.inningsid === 2) {
+            const updatedMatch = await MatchId.findOneAndUpdate({}, { $inc: { id: 1 }, $set: { inningsid: 0 } }, { new: true });
+            const match = await Match.find({})
+            res.status(200).json({ data: match, message: "Success, Match Updated, Match details fetched" });
+        }
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+const addPlayers = async (req, res) => {
     try {
         let i;
-        for(i=0;i<req.body.length;i++)
-        {
+        for (i = 0; i < req.body.length; i++) {
             let player = new PlayerList(req.body[i]);
-            await player.save();   
+            await player.save();
         }
         res.status(201).json({ message: "Players Saved" });
     }
@@ -333,5 +367,6 @@ module.exports = {
     getPlayerList,
     getSelected,
     zeroMatchId,
-    addPlayers
+    addPlayers,
+    incrementMatchId
 } 

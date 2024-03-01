@@ -28,21 +28,21 @@ const FallOfWicketsSchema = new Schema({
 });
 
 const MatchSchema = new Schema({
-  id: {type: String, required: true},
+  id: { type: String, required: true },
   team1: { type: String, required: true },
   team2: { type: String, required: true },
   toss: { type: String, required: true },
   stadium: { type: String, required: true },
   totalRunsTeam1: { type: String, required: true },
   totalRunsTeam2: { type: String, required: true },
-  result: {type: String, required: true},
+  result: { type: String, required: true },
   battingTeam1: { type: [BattingStatsSchema], required: true },
   bowlingTeam1: { type: [BowlingStatsSchema], required: true },
-  extrasTeam1: { type:  Number, required: true },
+  extrasTeam1: { type: Number, required: true },
   fallOfWicketsTeam1: { type: [FallOfWicketsSchema], required: true },
   battingTeam2: { type: [BattingStatsSchema], required: true },
   bowlingTeam2: { type: [BowlingStatsSchema], required: true },
-  extrasTeam2: { type:  Number, required: true },
+  extrasTeam2: { type: Number, required: true },
   fallOfWicketsTeam2: { type: [FallOfWicketsSchema], required: true },
 }, { timestamps: true });
 
