@@ -114,12 +114,19 @@ const matchAdd = async (req, res) => {
 const getRecentMatch = async (req, res) => {
     try {
         if (req.params.id == 0) {
-            res.status(201).json({ message: "First Match is going" });
+            res.status(201).json({ message: "Match will start soon" });
             return;
         }
-        const match = await Match.find({ id: req.params.id })
+        let match;
+        if(req.params.inningsid === "1"){
+            match = await Match.find({ id: req.params.id }, {'totalRunsTeam2': 0, "result": 0, "battingTeam2": 0, "bowlingTeam2":0, "extrasTeam2": 0, "fallOfWicketsTeam2": 0})
             .sort({ createdAt: -1 })
             .limit(1)
+        }else{
+            match = await Match.find({ id: req.params.id })
+            .sort({ createdAt: -1 })
+            .limit(1)
+        }
         if (match.length === 0) {
             res.status(409).json({ message: "Match not started yet" });
         }
@@ -267,11 +274,16 @@ const patchMatchId = async (req, res) => {
 }
 const getPlayerList = async (req, res) => {
     try {
+        if(req.params.id === "0" || req.params.inningsid !== "0"){
+            res.status(201).json({ data: [] });
+            return;
+        }
         const match = await Match.findOne({ id: req.params.id });
         const players = await PlayerList.find({
             $or: [{ team: match.team1 }, { team: match.team2 }]
         });
         res.status(201).json({ data: players });
+        return;
     }
     catch (err) {
         res.status(500).json({ message: err.message })
@@ -289,8 +301,12 @@ const addPlayer = async (req, res) => {
 }
 const getSelected = async (req, res) => {
     try {
-        const user = await Users.find({ id: req.params.id });
-        res.status(201).json({ isSelected: user[0].selected, message: "Success" });
+        const selection = await Selections.find({ id: req.params.id, mid: req.params.matchid });
+        if(selection.length !== 0){
+            res.status(201).json({ data: selection,  isSelected: true, message: "Success" });
+        }else{
+            res.status(201).json({ isSelected: false, message: "Success" });
+        }
     }
     catch (err) {
         res.status(500).json({ message: err.message })
@@ -322,18 +338,18 @@ const incrementMatchId = async (req, res) => {
         }
         if (match.inningsid === 0) {
             const updatedMatch = await MatchId.findOneAndUpdate({}, { $inc: { inningsid: 1 } }, { new: true });
-            const players = await PlayerList.find({})
-            res.status(201).json({ data: players, message: "Success, Match Updated, Players list fetched" });
+            // const players = await PlayerList.find({})
+            res.status(201).json({ data: updatedMatch, message: "Success, Match Updated, Players list fetched" });
         }
         else if (match.inningsid === 1) {
             const updatedMatch = await MatchId.findOneAndUpdate({}, { $inc: { inningsid: 1 } }, { new: true });
-            const match = await Match.find({})
-            res.status(201).json({ data: match, message: "Success, Match Updated, Match details fetched" });
+            // const match = await Match.find({})
+            res.status(201).json({ data: updatedMatch, message: "Success, Match Updated, Match details fetched" });
         }
         else if (match.inningsid === 2) {
             const updatedMatch = await MatchId.findOneAndUpdate({}, { $inc: { id: 1 }, $set: { inningsid: 0 } }, { new: true });
-            const match = await Match.find({})
-            res.status(200).json({ data: match, message: "Success, Match Updated, Match details fetched" });
+            // const match = await Match.find({})
+            res.status(200).json({ data: updatedMatch,message: "Success, Match Updated, Match details fetched" });
         }
     } catch (err) {
         res.status(500).json({ message: err.message })
