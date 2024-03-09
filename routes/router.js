@@ -18,6 +18,5 @@ router.post("/addPlayersList", addPlayers);
 router.get("/getPlayerList/:id/:inningsid", getPlayerList);
 router.get("/getSelected/:id/:matchid", getSelected);
 router.put("/zeroMatchId", zeroMatchId);
-
 router.put("/incrementMatchId", incrementMatchId)
 module.exports = router;
