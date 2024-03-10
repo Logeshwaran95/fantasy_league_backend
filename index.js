@@ -29,5 +29,5 @@ app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT,() => {
-    console.log(`Server started listening on ${PORT}`);
+    console.log(`Success ! Server started listening on ${PORT}`);
 });
