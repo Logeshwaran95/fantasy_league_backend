@@ -163,8 +163,8 @@ const calculateScore = async (req, res) => {
             }
             if ("runs" in player) {
                 playerScores[id] += player.runs;
-                playerScores[id] += Math.floor(player.runs / 50) * 4;
-                playerScores[id] += Math.floor(player.runs / 100) * 8;
+                playerScores[id] += player.runs >= 50 ? 4 : 0;
+                playerScores[id] += player.runs >= 100 ? 8 : 0;
                 if (player.runs === 0) {
                     playerScores[id] -= 3;
                 }
@@ -210,7 +210,6 @@ const calculateScore = async (req, res) => {
                 else playerScores[id] -= 6;
             }
         });
-
         const users = await Selections.find({ mid: req.params.id });
         users.map((user, key) => {
             let userScore = 0;
