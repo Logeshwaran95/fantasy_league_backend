@@ -26,7 +26,11 @@ const usersSchema = new Schema({
     selected:{
         type: Boolean,
         required: true
-    }
+    },
+    abacusId: {
+        type: Number,
+        required: true
+    },
 }, {timestamps:true});
 
 const Users = mongoose.model('Users', usersSchema);
