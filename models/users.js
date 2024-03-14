@@ -11,14 +11,14 @@ const usersSchema = new Schema({
         type: String,
         required: true
     },
-    // email: {
-    //     type: String,
-    //     required: true
-    // },
-    // phno: {
-    //     type: Number,
-    //     required: true
-    // },
+    email: {
+        type: String,
+        required: true
+    },
+    phno: {
+        type: Number,
+        required: true
+    },
     score: {
         type: Number,
         required: true
@@ -28,7 +28,7 @@ const usersSchema = new Schema({
         required: true
     },
     abacusId: {
-        type: String,
+        type: Number,
         required: true
     },
 }, {timestamps:true});
