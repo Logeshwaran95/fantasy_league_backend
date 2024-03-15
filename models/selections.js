@@ -25,7 +25,7 @@ const playerSchema = new Schema({
         type: String,
         required: true
     }
-})
+}, {timestamps: true})
 const selectionsSchema = new Schema({
     id: {
         type: String,
